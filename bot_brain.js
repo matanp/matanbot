@@ -3,7 +3,7 @@
 var count = 0;
 
 // Called every time a message comes in
-function message_main (context, msg) {
+const message_main = (context, msg) => {
   // Remove whitespace from chat message
   const commandName = msg.trim();
 
@@ -26,7 +26,11 @@ function message_main (context, msg) {
       msg_out = "I am a juggle bot, that is all I am"
     }
     else {
-      msg_out = "hi " + context.username + "!"
+      if (context) {
+        msg_out = `hi ${context.username}!`
+      } else {
+        msg_out = `hi!`
+      }
     }
     if (count % 11 == 0) {
       return `yall said my name ${count.toString()} times? wow!`;
