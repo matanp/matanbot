@@ -1,0 +1,22 @@
+{
+  'badge-info': { subscriber: '1' },
+  badges: { broadcaster: '1', subscriber: '0', premium: '1' },
+  'client-nonce': '188d11f5ce8a650aaca6ebd4a26f8055',
+  color: '#008000',
+  'display-name': 'matanjuggles',
+  emotes: null,
+  flags: null,
+  id: '873db0b0-f32d-4e36-b408-2bae7feddd4f',
+  mod: false,
+  'room-id': '128811347',
+  subscriber: true,
+  'tmi-sent-ts': '1605499753175',
+  turbo: false,
+  'user-id': '128811347',
+  'user-type': null,
+  'emotes-raw': null,
+  'badge-info-raw': 'subscriber/1',
+  'badges-raw': 'broadcaster/1,subscriber/0,premium/1',
+  username: 'matanjuggles',
+  'message-type': 'chat'
+}

@@ -6,6 +6,11 @@ const { exit } = require('process');
 //twitch client
 const tmi = require('tmi.js');
 
+//general logger
+const { logger } = require('./general_logger.js');
+//logger.info("hello");
+//nonsense
+
 //and we need the bot
 const { bot } = require('./bot_brain.js');
 
