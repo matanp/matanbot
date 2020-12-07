@@ -6,10 +6,9 @@ const { exit } = require('process');
 //twitch client
 const tmi = require('tmi.js');
 
-//general logger
+//general logger and twitch logger
 const { logger } = require('./general_logger.js');
-//logger.info("hello");
-//nonsense
+const { twitch_log } = require('./twitch_logger.js');
 
 //and we need the bot
 const { bot } = require('./bot_brain.js');
@@ -41,10 +40,11 @@ client.connect();
 // msg is the actual message
 // self is a boolean of if the message is coming from this client
 function onMessageHandler (target, context, msg, self) {
-    if (self) { return; }
+  twitch_log.message({username: context.username, message: msg});
+  if (self) { return; }
     //console.log(target);
     //console.log(context);
-    console.log(msg);
+    //console.log(msg);
     let response = bot(context, msg);
     if (response) {
       client.say(target, response);
