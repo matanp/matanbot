@@ -2,7 +2,7 @@
 'use strict';
 const { createLogger, format, transports } = require('winston');
 require('winston-daily-rotate-file');
-const logDir = 'twtich-chat-history';
+const logDir = 'twitch-chat-history';
 
 const logger_levels = {
   levels: {

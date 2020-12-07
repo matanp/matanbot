@@ -1,13 +1,11 @@
 'use strict';
 require('dotenv').config();
 
-const { exit } = require('process');
-
 //twitch client
 const tmi = require('tmi.js');
 
 //general logger and twitch logger
-const { logger } = require('./general_logger.js');
+//const { logger } = require('./general_logger.js');
 const { twitch_log } = require('./twitch_logger.js');
 
 //and we need the bot
