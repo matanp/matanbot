@@ -1,5 +1,9 @@
 'use strict';
+//let linter know process is a global var in node
+/* global process */
+
 require('dotenv').config();
+const { exec } = require('child_process');
 
 //twitch client
 const tmi = require('tmi.js');
@@ -10,6 +14,7 @@ const { twitch_log } = require('./twitch_logger.js');
 
 //and we need the bot
 const { bot } = require('./bot_brain.js');
+const { executionAsyncId } = require('async_hooks');
 
 // Define configuration options from env file
 const opts = {
@@ -29,8 +34,10 @@ const client = new tmi.client(opts);
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
+console.log(client);
+
 // Connect to Twitch:
-client.connect();
+//client.connect();
 
 // Called every time a message comes in
 // target is the twitch channel the message is coming from
@@ -53,4 +60,7 @@ function onMessageHandler (target, context, msg, self) {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
+    exec('./jlab.bat togif 945 -out /public/jugglinglab/ss.gif');
 }
+
+module.exports = { twitch: client }
