@@ -1,16 +1,15 @@
 'use strict';
+/* global process */
 require('dotenv').config();
 
-const { exit } = require('process');
-
 //twitch client
-const tmi = require('tmi.js');
+const twitch_client = require('tmi.js');
 
 //and we need the bot
 const { bot } = require('./bot_brain.js');
 
 // Define configuration options from env file
-const opts = {
+const client_config = {
   identity: {
     username: process.env.USER,
     password: process.env.OATH
@@ -21,7 +20,7 @@ const opts = {
 };
 
 // Create a Twitch client with options
-const client = new tmi.client(opts);
+const client = new twitch_client.client(client_config);
 
 // Register event handlers (defined below)
 client.on('message', onMessageHandler);
@@ -30,19 +29,21 @@ client.on('connected', onConnectedHandler);
 // Connect to Twitch:
 client.connect();
 
+/*
 // Called every time a message comes in
-// target is the twitch channel the message is coming from
-// context is information about the user -- see example_context
-// msg is the actual message
-// self is a boolean of if the message is coming from this client
-function onMessageHandler (target, context, msg, self) {
-    if (self) { return; }
+ target_channel is the twitch channel the message is coming from
+ user_info is information about the user -- see example_context
+ user_msg is the actual message
+ from_self is a boolean of if the message is coming from this client
+*/
+function onMessageHandler (target_channel, user_info, user_msg, from_self) {
+    if (from_self) { return; }
     //console.log(target);
     //console.log(context);
-    console.log(msg);
-    let response = bot(context, msg);
+    console.log(user_msg);
+    let response = bot(user_info, user_msg);
     if (response) {
-      client.say(target, response);
+      client.say(target_channel, response);
     }
 
 }
