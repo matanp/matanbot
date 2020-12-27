@@ -1,5 +1,6 @@
 log/
 node_modules/
+obs_objects_ref/
 twitch_chat_history/
 .env
 .eslintrc.json

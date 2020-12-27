@@ -1,5 +1,7 @@
 'use strict';
 
+const switchGreenScreenBG = require('./obs_helper.js').switchGreenScreenBG;
+
 var count = 0;
 
 // Called every time a message comes in
@@ -32,6 +34,33 @@ function message_main (user_info, user_msg) {
       return `yall said my name ${count.toString()} times? wow!`;
     } else {
       return msg_out;
+    }
+  }
+  let parameters = user_msg.split(' ').filter(n => n);
+  let command = parameters.shift().slice(1).toLowerCase();
+
+  if(command === 'background' || command === 'bg') {
+    let images = [{"obs_name": "pool", "command_name": "pool"},
+                  {"obs_name": "tile-gradient", "command_name": "tile"},
+                  {"obs_name": "earth stock", "command_name": "earth"},
+                  {"obs_name": "duck", "command_name": "duck"},
+                  {"obs_name": "universe 1", "command_name": "universe"}];
+    
+    let bg = '';
+
+    images.forEach(function (image) {
+      if (parameters[0] === image.command_name) {
+        bg = image.obs_name;
+      }
+    });
+    if (bg != '') {
+      try {
+        switchGreenScreenBG(bg);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      return `Possible backgrounds are, pool, tile, earth, duck, universe. E.g. !background duck`    
     }
   }
 }

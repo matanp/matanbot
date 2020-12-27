@@ -8,6 +8,8 @@ const twitch_client = require('tmi.js');
 //and we need the bot
 const { bot } = require('./bot_brain.js');
 
+const connectOBSWebsocket = require('./obs_helper').connect;
+
 // Define configuration options from env file
 const client_config = {
   identity: {
@@ -28,6 +30,8 @@ client.on('connected', onConnectedHandler);
 
 // Connect to Twitch:
 client.connect();
+
+connectOBSWebsocket(); //connect to obs
 
 /*
 // Called every time a message comes in
