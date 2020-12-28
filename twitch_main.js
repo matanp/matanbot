@@ -6,7 +6,7 @@ require('dotenv').config();
 const twitch_client = require('tmi.js');
 
 //and we need the bot
-const { bot } = require('./bot_brain.js');
+const bot  = require('./bot_brain.js');
 
 const connectOBSWebsocket = require('./obs_helper').connect;
 
@@ -45,11 +45,10 @@ function onMessageHandler (target_channel, user_info, user_msg, from_self) {
     //console.log(target);
     //console.log(context);
     console.log(user_msg);
-    let response = bot(user_info, user_msg);
+    let response = bot.message_main(user_info, user_msg);
     if (response) {
       client.say(target_channel, response);
     }
-
 }
 
 // Called every time the bot connects to Twitch chat

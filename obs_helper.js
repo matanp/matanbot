@@ -30,6 +30,7 @@ async function connect() {
         //getScenes();
     } catch (err) {
         console.log('failed to connect to obs websocket');
+        console.log('OBS may not be open.')
         console.log(err);
         //throw(err);
     }
@@ -84,11 +85,5 @@ const switchGreenScreenBG = async (image_name) => {
         throw(err);
     }
 }
-
-
-//connect();
-//setTimeout(function () { switchGreenScreenBG('duck');}, 100);
-
-//setTimeout(function () { switchGreenScreenBG('earth stock');}, 2000);
 
 module.exports = { switchGreenScreenBG: switchGreenScreenBG, connect: connect }
