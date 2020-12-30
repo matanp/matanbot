@@ -27,7 +27,7 @@ function respondToMatanbotMention(user_info) {
   }
 }
 
-function changeGreenScreenBackground(image_request) {
+const changeGreenScreenBackground = async (image_request) => {
   let images = [
     { obs_name: "pool", command_name: "pool" },
     { obs_name: "tile-gradient", command_name: "tile" },
@@ -36,26 +36,28 @@ function changeGreenScreenBackground(image_request) {
     { obs_name: "universe 1", command_name: "universe" },
   ];
 
-  let bg = "";
-
-  images.forEach(function (image) {
+  for(let image of images) {
     if (image_request === image.command_name) {
-      bg = image.obs_name;
+      try {
+        if(await switchGreenScreenBG(image.obs_name)) {
+          return `Background has been changed.`
+        } else {
+          return `Cannot change background right now.`
+        }
+  
+      } catch (err) {
+        console.log(err);
+      }
     }
-  });
-  if (bg != "") {
-    try {
-      switchGreenScreenBG(bg);
-    } catch (err) {
-      console.log(err);
-    }
-  } else {
-    return `Possible backgrounds are, pool, tile, earth, duck, universe. E.g. !background duck`;
   }
+
+  //cannot find matching image, tell user what possible image names are
+  return `Possible backgrounds are, pool, tile, earth, duck, universe. E.g. !background duck`;
+
 }
 
 // Called every time a message comes in
-function message_main(user_info, user_msg) {
+const message_main = async (user_info, user_msg) => {
   // Remove whitespace from chat message
   const user_command = user_msg.trim().toLowerCase();
 
@@ -63,19 +65,13 @@ function message_main(user_info, user_msg) {
     return "Did someone say discord? Join Matan's discord to get updates on stream schedule, juggling advice, hangout and all around have a good time! https://discord.gg/bNUaFRE";
   }
   if (user_command.search("matanbot") != -1) {
-    let msg_out = respondToMatanbotMention(user_info);
-    if (msg_out) {
-      return msg_out;
-    }
+    return respondToMatanbotMention(user_info);
   }
-  const parameters = user_msg.split(" ").filter((n) => n);
-  const command = parameters.shift().slice(1).toLowerCase();
+  const parameters = user_msg.split(" ");
+  const command = parameters.shift().toLowerCase();
 
-  if (command === "background" || command === "bg") {
-    let msg_out = changeGreenScreenBackground(parameters[0]);
-    if (msg_out) {
-      return msg_out;
-    }
+  if (command === "!background" || command === "!bg") {
+    return await changeGreenScreenBackground(parameters[0]);
   }
 }
 
