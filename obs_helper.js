@@ -3,24 +3,19 @@ const OBSWebSocket = require('obs-websocket-js');
 
 const obs = new OBSWebSocket();
 
-const port = process.env.OBS_PORT || 'localhost:4444';
+const port = process.env.OBS_PORT;
 const pw = process.env.OBS_PW;
 
-async function getScenes() {
-    try {
-        let scene_data = await obs.send('GetSceneList');
-        console.log(scene_data.scenes);
-        scene_data.scenes.forEach(scene => {
-            console.log(`Scene: ${scene.name}`);
-            scene.sources.forEach(source => {
-                console.log(source);
-            });
-            process.exit();
-        });
-    } catch (err) {
-        console.log(err);
-        throw(err);
-    }
+let current_scene; //keep current with OBS by listening to 'SwitchScenes' event
+obs.on('SwitchScenes', (data) => {
+    current_scene = data.sceneName;
+});
+
+async function getScene(scene_name) {
+    let scene_data = await obs.send('GetSceneList');
+    return scene_data.scenes.find(scene => {
+        return scene.name === scene_name;
+    });  
 }
 
 async function connect() {
@@ -36,17 +31,16 @@ async function connect() {
     }
 }
 
-//will look for an image named image_name in the 'green screen effects'
-//scene of OBS
-//then will reorder the sources such that the image is
-//right after the camera, in this case 'green screen - pre'
+/*
+will look for an image named image_name in the 'green screen effects'
+scene of OBS
+then will reorder the sources such that the image is
+right after the camera, in this case 'green screen - pre'
+*/
 const switchGreenScreenBG = async (image_name) => {
     try {
-        let scene_data = await obs.send('GetSceneList');
-        let green_screen_scene = scene_data.scenes.find(scene => {
-            return scene.name === 'green screen effects';
-        });  
-        if (scene_data.currentScene != green_screen_scene.name) {
+        let green_screen_scene = await getScene('green screen effects');
+        if (current_scene != green_screen_scene.name) {
             return false;
         }
         let image = green_screen_scene.sources.find(source => {
@@ -56,7 +50,6 @@ const switchGreenScreenBG = async (image_name) => {
         let camera_order = green_screen_scene.sources.findIndex(source => {
             return source.name === 'green screen - pre';
         });
-        //console.log(camera_order);
 
         re_ordered_sources = [];
 
@@ -74,7 +67,6 @@ const switchGreenScreenBG = async (image_name) => {
             }
         }
 
-        //console.log(re_ordered_sources);
         await obs.send('ReorderSceneItems', {
             "scene": green_screen_scene,
             "items": re_ordered_sources       
@@ -86,4 +78,39 @@ const switchGreenScreenBG = async (image_name) => {
     }
 }
 
-module.exports = { switchGreenScreenBG: switchGreenScreenBG, connect: connect }
+/*
+OBS scene 'hearts helper' has multiple copies of the same media source
+when this method is called, show the first copy that is not
+currently being shown.
+
+video is loop of a heart eyes emoji, hence the naming
+*/
+const showNewHeartEyes = async () => {
+    const heart_scene = await getScene('hearts helper');
+
+    for(let source of heart_scene.sources) {
+        if(!source.render) {
+            //render source
+            try {
+                await obs.send('SetSceneItemRender', {
+                    "scene-name": "hearts helper",
+                    "source": source.name,
+                    "render": true
+                });
+                //4.5 seconds later (length of video clip), unrender
+                setTimeout(async () => {
+                    await obs.send('SetSceneItemRender', {
+                        "scene-name": "hearts helper",
+                        "source": source.name,
+                        "render": false
+                    });
+                }, 4500);
+            } catch (err) {
+                console.log(err);
+            }
+            break; //only render one source per call
+        }
+    }
+}
+
+module.exports = { switchGreenScreenBG: switchGreenScreenBG, connect: connect, showNewHeartEyes: showNewHeartEyes }
