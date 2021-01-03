@@ -22,12 +22,11 @@ async function connect() {
     try {
         await obs.connect({address : port, password: pw});
         console.log('connected to obs websocket');
-        //getScenes();
+        current_scene = (await obs.send('GetCurrentScene')).name;
     } catch (err) {
         console.log('failed to connect to obs websocket');
         console.log('OBS may not be open.')
         console.log(err);
-        //throw(err);
     }
 }
 
