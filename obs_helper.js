@@ -84,10 +84,10 @@ currently being shown.
 
 video is loop of a heart eyes emoji, hence the naming
 */
-const showNewHeartEyes = async () => {
+const showHeartEyes = async () => {
     const heart_scene = await getScene('hearts helper');
 
-    for(let source of heart_scene.sources) {
+    for (let source of heart_scene.sources) {
         if(!source.render) {
             //render source
             try {
@@ -112,4 +112,4 @@ const showNewHeartEyes = async () => {
     }
 }
 
-module.exports = { switchGreenScreenBG: switchGreenScreenBG, connect: connect, showNewHeartEyes: showNewHeartEyes }
+module.exports = { switchGreenScreenBG: switchGreenScreenBG, connect: connect, showHeartEyes: showHeartEyes }
