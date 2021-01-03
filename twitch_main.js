@@ -1,6 +1,7 @@
 "use strict";
 /* global process */
 require("dotenv").config();
+const fs = require('fs');
 
 //twitch client
 const twitch_client = require("tmi.js");
@@ -22,6 +23,10 @@ const client_config = {
 // Create a Twitch client with options
 const client = new twitch_client.client(client_config);
 
+// Setup data for twitch timer commands
+const rawdata = fs.readFileSync('timers.json');
+let timer_data = JSON.parse(rawdata);
+
 // Register event handlers (defined below)
 client.on("message", onMessageHandler);
 client.on("connected", onConnectedHandler);
@@ -42,9 +47,10 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
   if (from_self) {
     return;
   }
-  //console.log(target);
-  //console.log(context);
   console.log(user_msg);
+  for(let timer of timer_data.timers) {
+    timer.countLines = timer.countLines + 1
+  }
 
   let response_promise = bot.message_main(user_info, user_msg);
   response_promise.then(
@@ -58,4 +64,13 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
+  for(let timer of timer_data.timers) {
+    timer.countLines = 0
+    setInterval(() => {
+      if(timer.countLines >= timer.minLines) {
+        timer.countLines = 0
+        client.say(process.env.CHANNEL, timer.message)
+      }
+    }, timer.time);
+  }
 }

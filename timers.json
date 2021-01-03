@@ -1,0 +1,14 @@
+{
+    "timers": [
+        {
+            "message": "this is a test",
+            "time": 5000,
+            "minLines": 5
+        },
+        {
+            "message": "this is a test 2",
+            "time": 10000,
+            "minLines": 2
+        }
+    ]
+}
