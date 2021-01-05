@@ -1,7 +1,7 @@
 "use strict";
 /* global process */
 require("dotenv").config();
-const fs = require('fs');
+const fs = require("fs");
 
 //twitch client
 const twitch_client = require("tmi.js");
@@ -10,6 +10,8 @@ const twitch_client = require("tmi.js");
 const bot = require("./bot_brain.js");
 
 const connectOBSWebsocket = require("./obs_helper").connect;
+
+const channelOut = process.env.CHANNEL;
 
 // Define configuration options from env file
 const client_config = {
@@ -24,7 +26,8 @@ const client_config = {
 const client = new twitch_client.client(client_config);
 
 // Setup data for twitch timer commands
-const rawdata = fs.readFileSync('timers.json');
+// Timer logic happens on twitch connection and on message
+const rawdata = fs.readFileSync("timers.json");
 let timer_data = JSON.parse(rawdata);
 
 // Register event handlers (defined below)
@@ -48,10 +51,17 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
     return;
   }
   console.log(user_msg);
-  for(let timer of timer_data.timers) {
-    timer.countLines = timer.countLines + 1
+
+  //handle timer logic
+  for (let timer of timer_data.timers) {
+    timer.countLines = timer.countLines + 1;
+    if (timer.prioritizeLines && timer.countLines > timer.minLines) {
+      timer.countLines = 0;
+      client.say(channelOut, timer.message);
+    }
   }
 
+  //pass the message into the bot
   let response_promise = bot.message_main(user_info, user_msg);
   response_promise.then(
     (result) => {
@@ -64,13 +74,13 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
-  for(let timer of timer_data.timers) {
-    timer.countLines = 0
+  for (let timer of timer_data.timers) {
+    timer.countLines = 0;
     setInterval(() => {
-      if(timer.countLines >= timer.minLines) {
-        timer.countLines = 0
-        client.say(process.env.CHANNEL, timer.message)
+      if (timer.countLines >= timer.minLines) {
+        timer.countLines = 0;
+        client.say(channelOut, timer.message);
       }
-    }, timer.time);
+    }, timer.time * 1000);
   }
 }
