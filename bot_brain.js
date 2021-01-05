@@ -1,5 +1,5 @@
 "use strict";
-const switchGreenScreenBG = require("./obs_helper.js").switchGreenScreenBG;
+const obs = require("./obs_helper.js");
 
 let matanbot_mention_count = 0;
 
@@ -39,7 +39,7 @@ const changeGreenScreenBackground = async (image_request) => {
   for(let image of images) {
     if (image_request === image.command_name) {
       try {
-        if(await switchGreenScreenBG(image.obs_name)) {
+        if(await obs.switchGreenScreenBG(image.obs_name)) {
           return `Background has been changed.`
         } else {
           return `Cannot change background right now.`
@@ -61,6 +61,9 @@ const message_main = async (user_info, user_msg) => {
   // Remove whitespace from chat message
   const user_command = user_msg.trim().toLowerCase();
 
+  if (user_command.search("clap") != -1) {
+    obs.showHeartEyes();
+  }
   if (user_command.search("discord") != -1) {
     return "Did someone say discord? Join Matan's discord to get updates on stream schedule, juggling advice, hangout and all around have a good time! https://discord.gg/bNUaFRE";
   }
