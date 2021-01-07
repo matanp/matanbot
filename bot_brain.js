@@ -34,6 +34,7 @@ const changeGreenScreenBackground = async (image_request) => {
     { obs_name: "earth stock", command_name: "earth" },
     { obs_name: "duck", command_name: "duck" },
     { obs_name: "universe 1", command_name: "universe" },
+    { obs_name: "invisible", command_name: "invisible"}
   ];
 
   for(let image of images) {
@@ -52,7 +53,7 @@ const changeGreenScreenBackground = async (image_request) => {
   }
 
   //cannot find matching image, tell user what possible image names are
-  return `Possible backgrounds are, pool, tile, earth, duck, universe. E.g. !background duck`;
+  return `Possible backgrounds are, pool, tile, earth, duck, universe, invisible. E.g. !background duck`;
 
 }
 
