@@ -38,6 +38,13 @@ client.connect();
 
 connectOBSWebsocket(); //connect to obs
 
+function repeatedMessageSay(message) {
+    if (message.countLines >= message.minLines) {
+        message.countLines = 0;
+        client.say(channelOut, message.message);
+    }
+}
+
 /*
 // Called every time a message comes in
  target_channel is the twitch channel the message is coming from
@@ -54,9 +61,8 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
     //handle message logic
     for (let message of repeated_messages_out.timers) {
         message.countLines = message.countLines + 1;
-        if (message.prioritizeLines && message.countLines > message.minLines) {
-            message.countLines = 0;
-            client.say(channelOut, message.message);
+        if (message.prioritizeLines) {
+            repeatedMessageSay(message);
         }
     }
 
@@ -76,10 +82,7 @@ function onConnectedHandler(addr, port) {
     for (let message of repeated_messages_out.timers) {
         message.countLines = 0;
         setInterval(() => {
-            if (message.countLines >= message.minLines) {
-                message.countLines = 0;
-                client.say(channelOut, message.message);
-            }
+            repeatedMessageSay(message);
         }, message.time * 1000);
     }
 }
