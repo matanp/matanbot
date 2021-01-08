@@ -1,0 +1,22 @@
+{
+    "timers": [
+        {
+            "message": "Find Matan on Instagram:\nhttps://instagram.com/matanjuggles/",
+            "time": 600,
+            "minLines": 9,
+            "prioritizeLines": false
+        },
+        {
+            "message": "Find Matan on Youtube:\nhttps://www.youtube.com/c/MatanPresberg",
+            "time": 550,
+            "minLines": 9,
+            "prioritizeLines": false
+        },
+        {
+            "message": "Hi! I'm matanbot, your friendly neighborhood twitch bot. You can clap or try !background to interact with me.",
+            "time": 1000,
+            "minLines": 30,
+            "prioritizeLines": true
+        }
+    ]
+}
