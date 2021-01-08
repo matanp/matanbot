@@ -1,16 +1,16 @@
 {
-  "name": "matanbot",
-  "version": "1.0.0",
-  "description": "Chat bot for matanjuggles social media.",
-  "main": "twitch_main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Matan Presberg",
-  "license": "MIT",
-  "dependencies": {
-    "obs-websocket-js": "^4.0.2",
-    "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.0"
-  }
+    "name": "matanbot",
+    "version": "1.0.0",
+    "description": "Chat bot for matanjuggles social media.",
+    "main": "twitch_main.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Matan Presberg",
+    "license": "MIT",
+    "dependencies": {
+        "obs-websocket-js": "^4.0.2",
+        "winston": "^3.3.3",
+        "winston-daily-rotate-file": "^4.5.0"
+    }
 }

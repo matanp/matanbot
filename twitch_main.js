@@ -10,7 +10,6 @@ const twitch_client = require("tmi.js");
 const bot = require("./bot_brain.js");
 
 const connectOBSWebsocket = require("./obs_helper").connect;
-
 const channelOut = process.env.CHANNEL;
 
 // Define configuration options from env file
@@ -19,16 +18,16 @@ const client_config = {
         username: process.env.USER,
         password: process.env.OATH,
     },
-    channels: [process.env.CHANNEL],
+    channels: [channelOut],
 };
 
 // Create a Twitch client with options
 const client = new twitch_client.client(client_config);
 
-// Setup data for twitch timer commands
-// Timer logic happens on twitch connection and on message
-const rawdata = fs.readFileSync("timers.json");
-let timer_data = JSON.parse(rawdata);
+// Setup data for twitch message commands
+// message logic happens on twitch connection and on message
+const messages_json = fs.readFileSync("timers.json");
+let repeated_messages_out = JSON.parse(messages_json);
 
 // Register event handlers (defined below)
 client.on("message", onMessageHandler);
@@ -52,12 +51,12 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
     }
     console.log(user_msg);
 
-    //handle timer logic
-    for (let timer of timer_data.timers) {
-        timer.countLines = timer.countLines + 1;
-        if (timer.prioritizeLines && timer.countLines > timer.minLines) {
-            timer.countLines = 0;
-            client.say(channelOut, timer.message);
+    //handle message logic
+    for (let message of repeated_messages_out.timers) {
+        message.countLines = message.countLines + 1;
+        if (message.prioritizeLines && message.countLines > message.minLines) {
+            message.countLines = 0;
+            client.say(channelOut, message.message);
         }
     }
 
@@ -65,7 +64,7 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
     let response_promise = bot.message_main(user_info, user_msg);
     response_promise.then(
         (result) => {
-            if (result) client.say(target_channel, result);
+            if (result) client.say(channelOut, result);
         },
         (error) => console.log(error)
     );
@@ -74,13 +73,13 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
-    for (let timer of timer_data.timers) {
-        timer.countLines = 0;
+    for (let message of repeated_messages_out.timers) {
+        message.countLines = 0;
         setInterval(() => {
-            if (timer.countLines >= timer.minLines) {
-                timer.countLines = 0;
-                client.say(channelOut, timer.message);
+            if (message.countLines >= message.minLines) {
+                message.countLines = 0;
+                client.say(channelOut, message.message);
             }
-        }, timer.time * 1000);
+        }, message.time * 1000);
     }
 }
