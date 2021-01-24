@@ -9,6 +9,8 @@ const twitch_client = require("tmi.js");
 //and we need the bot
 const bot = require("./bot_brain.js");
 
+const twitch_chat_websocket = require('./twitch_chat_ws');
+
 const connectOBSWebsocket = require("./obs_helper").connect;
 const channelOut = process.env.CHANNEL;
 
@@ -58,7 +60,10 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
     }
     console.log(user_msg);
 
-    //handle message logic
+    //send message over websocket, frontend listening for messages
+    twitch_chat_websocket.chat_client.send(`{"user": "${user_info.username}", "text": "${user_msg}"}`);
+
+    //handle timer logic
     for (let message of repeated_messages_out.timers) {
         message.countLines = message.countLines + 1;
         if (message.prioritizeLines) {
