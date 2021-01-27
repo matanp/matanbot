@@ -6,14 +6,17 @@ let matanbot_mention_count = 0;
 let mlk_quote_num = 0;
 
 const commands_json = fs.readFileSync("commands.json");
-let added_commands = JSON.parse(commands_json).commands;
+const added_commands = JSON.parse(commands_json).commands;
 function saveCommands(commands) {
     let save_commands_json = {
-        "commands": commands
-    }
+        commands: commands,
+    };
 
     fs.writeFileSync("commands.json", JSON.stringify(save_commands_json));
 }
+
+//every 5 minutes, save commands to persist usage counts
+setInterval(() => saveCommands(added_commands), 5 * 60 * 1000);
 
 function respondToMatanbotMention(user_info) {
     //random number 1 to 10
@@ -93,6 +96,64 @@ function mlk_quote() {
     return `${quotes[mlk_quote_num]} - Martin Luther King Jr.`;
 }
 
+function addCommand(user_info, user_parameters) {
+    if (user_parameters.length < 2) {
+        return `Mods can add a command with !add {command} {response} {+m for mod only}`;
+    }
+
+    const now = new Date(Date.now());
+    const mod_only = user_parameters[user_parameters.length - 1] === `+m`;
+    if (mod_only) {
+        user_parameters.pop(); //remove +m from response message
+    }
+
+    const new_command = {
+        command_word: user_parameters.shift(),
+        response: user_parameters.join(` `),
+        mod_only: mod_only,
+        added_by: user_info["display-name"],
+        added_timestamp: `${
+            now.getMonth() + 1
+        }-${now.getDate()}, ${now.getFullYear()}`,
+        usage_count: 0,
+    };
+
+    if (
+        !added_commands.find(
+            (command) => command.command_word === new_command.command_word
+        )
+    ) {
+        added_commands.push(new_command);
+        saveCommands(added_commands);
+        return `Added !${new_command.command_word}`
+    } else {
+        return `!${new_command.command_word} already exists. Use !edit to change it.`
+    }
+
+}
+
+function editCommand(user_parameters) {
+    if (user_parameters.length < 2) {
+        return `Mods can edit an existing command with !edit {command} {response} {+m for mod only}. Must add +m for command to stay mod only.`;
+    }
+
+    const command_word = user_parameters.shift();
+    const edit_command = added_commands.find((command) => command.command_word === command_word);
+    if (!edit_command) {
+        return `!${command_word} is not an existing command.`
+    }
+
+    const mod_only = user_parameters[user_parameters.length - 1] === `+m`;
+    if (mod_only) {
+        user_parameters.pop(); //remove +m from response message
+    }
+    edit_command.mod_only = mod_only;
+    edit_command.response = user_parameters.join(` `);
+    saveCommands(added_commands);
+
+    return `Edited !${edit_command.command_word}`
+}
+
 // Called every time a message comes in
 const message_main = async (user_info, user_msg) => {
     // Remove whitespace from chat message
@@ -120,42 +181,34 @@ const message_main = async (user_info, user_msg) => {
         return mlk_quote();
     }
 
-    if (mod_privileges && (user_command === `!add` || user_command === `!addCommand`)) {
-        if (user_parameters === null) {
-            return `Mods can add a command with !add {command} {response} {+m for mod only}`;
-        }
-        
-        const now = new Date(Date.now());
-        const mod_only = (user_parameters[user_parameters.length - 1] === `+m`);
-        if (mod_only) { user_parameters.pop() }
+    if (
+        mod_privileges &&
+        (user_command === `!add` || user_command === `!addCommand`)
+    ) {
+        return addCommand(user_info, user_parameters);
+    }
 
-        const new_command = {
-            "command_word": user_parameters.shift(),
-            "response": user_parameters.join(` `),
-            "mod_only": mod_only,
-            "added_by": user_info['display-name'],
-            "added_timestamp": `${now.getMonth()+1}-${now.getDate()}, ${now.getFullYear()}`,
-            "usage_count": 0
-        };
-
-        added_commands.push(new_command);
-        saveCommands(added_commands);
+    if (
+        mod_privileges &&
+        (user_command === `!edit` || user_command === `!editCommand`)
+    ) {
+        return editCommand(user_parameters);
     }
 
     for (let added_command of added_commands) {
-        if(user_command === `!${added_command.command_word}`) {
+        if (user_command === `!${added_command.command_word}`) {
             if (!added_command.mod_only || mod_privileges) {
                 if (user_parameters[0] === `count`) {
                     return `${user_command} has been used ${added_command.usage_count} times.`;
+                } else if (user_parameters[0] === `age`) {
+                    return `${user_command} was added on ${added_command.added_date} by ${added_command.added_by}.`;
+                } else {
+                    added_command.usage_count = added_command.usage_count + 1;
+                    return added_command.response;
                 }
-
-                added_command.usage_count = added_command.usage_count + 1;
-                saveCommands(added_commands);
-
-                return added_command.response;
-            }  
+            }
         }
     }
-}
+};
 
 module.exports = { message_main: message_main };
