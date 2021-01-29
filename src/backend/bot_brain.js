@@ -109,7 +109,7 @@ function addCommand(user_info, user_parameters) {
 
     const new_command = {
         command_word: user_parameters.shift(),
-        response: user_parameters.join(` `),
+        response_array: user_parameters,
         mod_only: mod_only,
         added_by: user_info["display-name"],
         added_timestamp: `${
@@ -148,7 +148,7 @@ function editCommand(user_parameters) {
         user_parameters.pop(); //remove +m from response message
     }
     edit_command.mod_only = mod_only;
-    edit_command.response = user_parameters.join(` `);
+    edit_command.response = user_parameters;
     saveCommands(added_commands);
 
     return `Edited !${edit_command.command_word}`
@@ -204,7 +204,14 @@ const message_main = async (user_info, user_msg) => {
                     return `${user_command} was added on ${added_command.added_date} by ${added_command.added_by}.`;
                 } else {
                     added_command.usage_count = added_command.usage_count + 1;
-                    return added_command.response;
+
+                    return added_command.response_array.reduce((cur_value, add_value) => {
+                        if (add_value === `{count}`) {
+                            return `${cur_value} ${added_command.usage_count}`
+                        } else {
+                            return `${cur_value} ${add_value}`
+                        }
+                    }, "");
                 }
             }
         }

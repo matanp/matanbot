@@ -1,12 +1,1 @@
-{
-    "commands": [
-        {
-            "command_word": "hello",
-            "response": "world",
-            "mod_only": false,
-            "added_by": "matanjuggles",
-            "added_date": "1-25, 2021",
-            "usage_count": 3
-        }
-    ]
-}
+{"commands":[{"command_word":"hello","response_array":["world"],"mod_only":false,"added_by":"matanjuggles","added_date":"1-25, 2021","usage_count":6},{"command_word":"a","response_array":["this","has","been","used","{count}","times"],"mod_only":false,"added_by":"matanjuggles","added_timestamp":"1-28, 2021","usage_count":8}]}
