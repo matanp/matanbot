@@ -119,7 +119,7 @@ const message_main = async (user_info, user_msg) => {
     const user_parameters = user_msg.split(" ");
     const user_command = user_parameters.shift().toLowerCase();
     const mod_privileges =
-        user_info.mod || user_info.badges.broadcaster === `1`;
+        user_info.mod || user_info.badges?.broadcaster === `1`;
 
     if (user_command === "!background" || user_command === "!bg") {
         return await changeGreenScreenBackground(user_parameters[0]);
