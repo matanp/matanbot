@@ -6,18 +6,20 @@ const chat_timeout = 30000; //time in milliseconds
 const EMOTE_URL_BASE = `http://static-cdn.jtvnw.net/emoticons/v1/`
 
 const TwitchChat = () => {
-    const [messageList, setMessageList] = useState([
-        {
-            time: Date.now(),
-            user: "matan",
-            text: "oh hi",
-        },
-        {
-            time: Date.now() + 1000,
-            user: "matan",
-            text: "oh hi 2",
-        },
-    ]);
+    // const [messageList, setMessageList] = useState([
+    //     {
+    //         time: Date.now(),
+    //         user: "matan",
+    //         text: "oh hi",
+    //     },
+    //     {
+    //         time: Date.now() + 1000,
+    //         user: "matan",
+    //         text: "oh hi 2",
+    //     },
+    // ]);
+
+    const [messageList, setMessageList] = useState([]);
 
     const [emotes, setEmotes] = useState([304047803, 304214060]);
 
@@ -39,14 +41,14 @@ const TwitchChat = () => {
     const handleData = (message_data) => {
         //console.log(message_data);
         const message = JSON.parse(message_data);
-        setMessageList([
-            ...messageList,
-            {
-                time: Date.now(),
-                user: message.user,
-                text: message.text,
-            },
-        ]);
+        // setMessageList([
+        //     ...messageList,
+        //     {
+        //         time: Date.now(),
+        //         user: message.user,
+        //         text: message.text,
+        //     },
+        // ]);
 
         setEmotes([...emotes, ...Object.keys(message.emotes)]);
 
@@ -65,7 +67,7 @@ const TwitchChat = () => {
             </ul>
             <div>
                 {emotes.map((item, index) => (
-                    <img src={`${EMOTE_URL_BASE}/${item}/3.0`} alt="" key={index}></img>
+                    <img className="emote" src={`${EMOTE_URL_BASE}/${item}/3.0`} alt="" key={index}></img>
                 ))}
             </div>
             <Websocket
