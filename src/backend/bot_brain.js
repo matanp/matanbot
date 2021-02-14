@@ -129,18 +129,14 @@ const message_main = async (user_info, user_msg) => {
         return get_mlk_quote();
     }
 
-    if (
-        mod_privileges &&
-        (user_command === `!add` || user_command === `!addCommand`)
-    ) {
-        return addCommand(user_info, user_parameters);
-    }
-
-    if (
-        mod_privileges &&
-        (user_command === `!edit` || user_command === `!editCommand`)
-    ) {
-        return editCommand(user_parameters);
+    if(mod_privileges) {
+        if((user_command === `!add` || user_command === `!addcommand`)) {
+            return addCommand(user_info, user_parameters);           
+        } else if(user_command === `!edit` || user_command === `!editcommand`) {
+            return editCommand(user_parameters);
+        } else if(user_command === `!connectobs` ) {
+            obs.connect();
+        }
     }
 
     //loop through commands
