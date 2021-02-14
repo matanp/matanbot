@@ -29,3 +29,8 @@ module.exports.background_images = [
 
 module.exports.backgrounds_help_message = `Possible backgrounds are, pool, tile, earth, duck, universe, invisible, fire, rainbow, static. E.g. !background duck`;
 
+module.exports.green_screen_scene = `green screen effects`
+
+module.exports.green_screen_camera = `GS Basic`
+
+module.exports.hearts_scene = `hearts helper`
