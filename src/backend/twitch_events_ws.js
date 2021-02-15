@@ -44,7 +44,7 @@ function connect() {
     
         }
 
-        ws.send(`${listen_to_topics}`);
+        ws.send(JSON.stringify(listen_to_topics));
     };
 
     ws.onerror = function(error) {
