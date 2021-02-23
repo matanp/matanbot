@@ -15,7 +15,9 @@
 }
 
 .emote {
-    animation : pulse 1s;
+    position: absolute;
+    right: 0px;
+    animation : pulse 1s, fall 4s, disapear .3s 3.7s forwards;
 }
 
 @keyframes pulse {
@@ -26,5 +28,22 @@
     to {
         transform : scale(1);
         opacity   : 1;
+    }
+}
+
+@keyframes disapear {
+    from {
+        opacity: 1;
+    } to {
+        opacity: 0;
+    }
+}
+
+@keyframes fall {
+    from {
+        top: 0px;
+    }
+    to {
+        top: 250px;
     }
 }
