@@ -1,5 +1,6 @@
 require("dotenv").config();
 const OBSWebSocket = require("obs-websocket-js");
+const consts = require("./consts.js");
 
 const obs = new OBSWebSocket();
 
@@ -38,7 +39,7 @@ right after the camera, in this case 'green screen - pre'
 */
 const switchGreenScreenBG = async (image_name) => {
     try {
-        let green_screen_scene = await getScene("green screen effects");
+        let green_screen_scene = await getScene(consts.green_screen_scene);
         if (current_scene != green_screen_scene.name) {
             return false;
         }
@@ -47,7 +48,7 @@ const switchGreenScreenBG = async (image_name) => {
         });
 
         let camera_order = green_screen_scene.sources.findIndex((source) => {
-            return source.name === "green screen - pre";
+            return source.name === consts.green_screen_camera;
         });
 
         re_ordered_sources = [];
@@ -74,6 +75,7 @@ const switchGreenScreenBG = async (image_name) => {
             scene: green_screen_scene,
             items: re_ordered_sources,
         });
+
         return true;
     } catch (err) {
         console.log(err);
@@ -89,21 +91,21 @@ currently being shown.
 video is loop of a heart eyes emoji, hence the naming
 */
 const showHeartEyes = async () => {
-    const heart_scene = await getScene("hearts helper");
+    const heart_scene = await getScene(consts.hearts_scene);
 
     for (let source of heart_scene.sources) {
         if (!source.render) {
             //render source
             try {
                 await obs.send("SetSceneItemRender", {
-                    "scene-name": "hearts helper",
+                    "scene-name": consts.hearts_scene,
                     source: source.name,
                     render: true,
                 });
                 //4.5 seconds later (length of video clip), unrender
                 setTimeout(async () => {
                     await obs.send("SetSceneItemRender", {
-                        "scene-name": "hearts helper",
+                        "scene-name": consts.hearts_scene,
                         source: source.name,
                         render: false,
                     });
