@@ -1,12 +1,12 @@
 //https://dev.twitch.tv/docs/pubsub
 require("dotenv").config();
 const express = require('express');
-const WebSocket = require("ws");
+import WebSocket from 'ws';
 const fetch = require("node-fetch");
 
 const app = express();
 
-app.get('/auth/twitch', (req, res) => {
+app.get('/auth/twitch', (req : any, res:any ) => {
     console.log('expressss');
     console.log(req);
     console.log(res);
@@ -14,14 +14,14 @@ app.get('/auth/twitch', (req, res) => {
     return 'hello';
 });
 
-app.post('/auth/twitch', (req, res) => {
+app.post('/auth/twitch', (req: any, res: any) => {
   console.log('post');
   console.log(req);
-})
+});
 
 app.listen(8080, () => console.log('listening'));
 
-let ws;
+let ws : WebSocket;
 
 connect();
 
@@ -52,7 +52,7 @@ const authorize = async () => {
 
 setTimeout(() => authorize(), 1000);
 
-function randomString(length) {
+function randomString(length: number) {
   var text = "";
   var possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -98,6 +98,6 @@ function connect() {
 
   //TODO handle RECONNECT messages from server
   ws.onmessage = function (event) {
-    console.log(event.data.trim());
+    console.log(String(event.data).trim());
   };
 }
