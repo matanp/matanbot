@@ -1,10 +1,10 @@
 "use strict";
 /* global process */
 require("dotenv").config();
-const fs = require("fs");
+import fs from 'fs';
 
 //twitch client
-const twitch_client = require("tmi.js");
+import twitch_client from 'tmi.js'
 
 //and we need the bot
 const bot = require("./bot_brain.js");
@@ -12,7 +12,7 @@ const bot = require("./bot_brain.js");
 const twitch_chat_websocket = require('./twitch_chat_ws');
 
 const connectOBSWebsocket = require("./obs_helper").connect;
-const channelOut = process.env.CHANNEL;
+const channelOut : string = process.env.CHANNEL || '';
 
 // Define configuration options from env file
 const client_config = {
@@ -24,11 +24,11 @@ const client_config = {
 };
 
 // Create a Twitch client with options
-const client = new twitch_client.client(client_config);
+const client : twitch_client.Client = new twitch_client.client(client_config);
 
 // Setup data for twitch message commands
 // message logic happens on twitch connection and on message
-const messages_json = fs.readFileSync("timers.json");
+const messages_json : string = String(fs.readFileSync("timers.json"));
 let repeated_messages_out = JSON.parse(messages_json);
 
 // Register event handlers (defined below)
@@ -40,7 +40,7 @@ client.connect();
 
 connectOBSWebsocket(); //connect to obs
 
-function repeatedMessageSay(message) {
+function repeatedMessageSay(message : any) {
     if (message.countLines >= message.minLines) {
         message.countLines = 0;
         client.say(channelOut, message.message);
@@ -54,7 +54,7 @@ function repeatedMessageSay(message) {
  user_msg is the actual message
  from_self is a boolean of if the message is coming from this client
 */
-function onMessageHandler(target_channel, user_info, user_msg, from_self) {
+function onMessageHandler(target_channel : string, user_info : any, user_msg : string, from_self : boolean) {
     if (from_self) {
         return;
     }
@@ -74,15 +74,15 @@ function onMessageHandler(target_channel, user_info, user_msg, from_self) {
     //pass the message into the bot
     let response_promise = bot.message_main(user_info, user_msg);
     response_promise.then(
-        (result) => {
+        (result:string) => {
             if (result) client.say(channelOut, result);
         },
-        (error) => console.log(error)
+        (error: Error) => console.log(error)
     );
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler(addr, port) {
+function onConnectedHandler(addr : string, port: number) {
     console.log(`* Connected to ${addr}:${port}`);
     for (let message of repeated_messages_out.timers) {
         message.countLines = 0;
