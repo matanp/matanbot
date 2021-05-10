@@ -1,4 +1,8 @@
 const fs = require("fs");
+const firebase = require('firebase');
+const fetch = require('node-fetch');
+
+const DB_URL = 'https://matanbot-bab21-default-rtdb.firebaseio.com/commands.json';
 
 type Command = {
   command_word: string;
@@ -17,7 +21,14 @@ export const loadCommands = () => {
 
 //persist commands to store state when bot is off
 export const saveCommands = (commands: Command[]) => {
-  fs.writeFileSync("commands.json", JSON.stringify({ commands: commands }));
+  //fs.writeFileSync("commands.json", JSON.stringify({ commands: commands }));
+  fetch(DB_URL, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ commands: commands })
+  });
 };
 
 export const findCommand = (command_word: string, commands: Command[]) => {
