@@ -1,4 +1,4 @@
-module.exports.mlk_quotes = [
+export const mlk_quotes : string[] = [
     "I have a dream that one day this nation will rise up and live out the true meaning of its creed: We hold these truths to be self-evident that all men are created equal. I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character. I have a dream today.",
     "The ultimate measure of a man is not where he stands in moments of comfort and convenience, but where he stands at times of challenge and controversy.",
     "Injustice anywhere is a threat to justice everywhere.",
@@ -15,7 +15,7 @@ module.exports.mlk_quotes = [
     "I must confess that over the past few years I have been gravely disappointed with the white moderate. I have almost reached the regrettable conclusion that the Negro's great stumbling block in his stride toward freedom is not the White Citizen's Counciler or the Ku Klux Klanner, but the white moderate, who is more devoted to 'order' than to justice; who prefers a negative peace which is the absence of tension to a positive peace which is the presence of justice [...]",
 ];
 
-module.exports.background_images = [
+export const background_images : any[] = [
     { obs_name: "pool", command_name: "pool" },
     { obs_name: "tile-gradient", command_name: "tile" },
     { obs_name: "earth stock", command_name: "earth" },
@@ -27,10 +27,10 @@ module.exports.background_images = [
     { obs_name: "static", command_name: "static" }
 ];
 
-module.exports.backgrounds_help_message = `Possible backgrounds are, pool, tile, earth, duck, universe, invisible, fire, rainbow, static. E.g. !background duck`;
+export const backgrounds_help_message: string = `Possible backgrounds are, pool, tile, earth, duck, universe, invisible, fire, rainbow, static. E.g. !background duck`;
 
-module.exports.green_screen_scene = `green screen effects`
+export const green_screen_scene : string = `green screen effects`
 
-module.exports.green_screen_camera = `GS Basic`
+export const green_screen_camera : string = `GS Basic`
 
-module.exports.hearts_scene = `hearts helper`
+export const hearts_scene : string = `hearts helper`
