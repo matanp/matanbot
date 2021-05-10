@@ -14,6 +14,11 @@ app.get('/auth/twitch', (req, res) => {
     return 'hello';
 });
 
+app.post('/auth/twitch', (req, res) => {
+  console.log('post');
+  console.log(req);
+})
+
 app.listen(8080, () => console.log('listening'));
 
 let ws;
@@ -39,7 +44,7 @@ let url =
 
 const authorize = async () => {
   let response = await fetch(url);
-  console.log(response);
+  //console.log(response);
 //   console.log(response);
 //   console.log(response.url);
 //   console.log(response.headers);
