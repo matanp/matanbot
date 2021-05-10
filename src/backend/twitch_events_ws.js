@@ -23,7 +23,7 @@ connect();
 let clientId = process.env.CLIENT_ID;
 let redirectURI = "localhost:8080/auth/twitch";
 let sessionID = randomString(15);
-let scope = "user_read+chat_login";
+let scope = "chat:read";
 
 let url =
   "https://id.twitch.tv/oauth2/authorize" +
@@ -35,7 +35,7 @@ let url =
   "&state=" +
   sessionID +
   "&scope=" +
-  '';
+  scope;
 
 const authorize = async () => {
   let response = await fetch(url);
@@ -45,7 +45,7 @@ const authorize = async () => {
 //   console.log(response.headers);
 };
 
-authorize();
+setTimeout(() => authorize(), 1000);
 
 function randomString(length) {
   var text = "";
