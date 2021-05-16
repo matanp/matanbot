@@ -4,7 +4,7 @@ require("dotenv").config();
 import fs from 'fs';
 
 //twitch client
-import twitch_client from 'tmi.js'
+import * as twitch_client from 'tmi.js'
 
 //and we need the bot
 const bot = require("./bot_brain.js");
@@ -75,6 +75,8 @@ function onMessageHandler(target_channel : string, user_info : any, user_msg : s
     let response_promise = bot.message_main(user_info, user_msg);
     response_promise.then(
         (result:string) => {
+            console.log('twitch main received response');
+            console.log(result);
             if (result) client.say(channelOut, result);
         },
         (error: Error) => console.log(error)

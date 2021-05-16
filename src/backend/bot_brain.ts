@@ -1,13 +1,15 @@
 "use strict";
 const obs = require("./obs_helper.js");
 const consts = require("./consts.js");
-const commands = require("./commands.js");
+import * as commands from "./commands.js";
 const { add } = require("winston");
 
 let matanbot_mention_count = 0;
 let mlk_quote_num = 0;
 
-const added_commands = commands.loadCommands();
+let added_commands : commands.Command[] = [];
+
+(async () => added_commands = await commands.loadCommands())();
 
 //every 5 minutes, save commands to persist usage counts
 setInterval(() => commands.saveCommands(added_commands), 5 * 60 * 1000);
@@ -141,6 +143,8 @@ const message_main = async (user_info : any, user_msg : string) => {
 
     //loop through commands
     for (let added_command of added_commands) {
+        console.log('here');
+        console.log(added_command);
         if (user_command === `!${added_command.command_word}`) {
             //user doesn't have privileges to call this command
             if(!mod_privileges && added_command.mod_only) {
@@ -150,7 +154,7 @@ const message_main = async (user_info : any, user_msg : string) => {
             if (user_parameters[0] === `count`) {
                 return `${user_command} has been used ${added_command.usage_count} times.`;
             } else if (user_parameters[0] === `age`) {
-                return `${user_command} was added on ${added_command.added_date} by ${added_command.added_by}.`;
+                return `${user_command} was added on ${added_command.added_timestamp} by ${added_command.added_by}.`;
             } else {
                 added_command.usage_count = added_command.usage_count + 1;
 

@@ -1,10 +1,29 @@
-const fs = require("fs");
-const firebase = require('firebase');
-const fetch = require('node-fetch');
+import * as fs from "fs";
+import * as admin from "firebase-admin";
 
-const DB_URL = 'https://matanbot-bab21-default-rtdb.firebaseio.com/commands.json';
+import * as serviceAccount from "./matanbot-bab21-firebase-adminsdk-bsty9-9195f4ab44.json";
 
-type Command = {
+const params = {
+  type: serviceAccount.type,
+  projectId: serviceAccount.project_id,
+  privateKeyId: serviceAccount.private_key_id,
+  privateKey: serviceAccount.private_key,
+  clientEmail: serviceAccount.client_email,
+  clientId: serviceAccount.client_id,
+  authUri: serviceAccount.auth_uri,
+  tokenUri: serviceAccount.token_uri,
+  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
+  clientC509CertUrl: serviceAccount.client_x509_cert_url,
+};
+
+admin.initializeApp({
+  credential: admin.credential.cert(params),
+  databaseURL: "https://matanbot-bab21-default-rtdb.firebaseio.com",
+});
+
+const db = admin.firestore();
+
+export type Command = {
   command_word: string;
   response_array: string[];
   mod_only: boolean;
@@ -13,22 +32,40 @@ type Command = {
   usage_count: number;
 };
 
+type FirebaseCollection =
+  FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>;
+
 //load commands from json file
-export const loadCommands = () => {
-  const commands_json = fs.readFileSync("commands.json");
-  return JSON.parse(commands_json).commands;
+export const loadCommands: () => Promise<Command[]> = async () => {
+  console.log('loading commands from database');
+  const chat_commands_collection: FirebaseCollection = await db
+    .collection("chat_commands")
+    .get();
+
+  console.log('retrieved data');
+
+  return chat_commands_collection.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      command_word: data.command_word,
+      response_array: data.response_array,
+      mod_only: data.mod_only,
+      added_by: data.added_by,
+      added_timestamp: data.added_timestamp,
+      usage_count: data.usage_count,
+    };
+  });
 };
 
 //persist commands to store state when bot is off
 export const saveCommands = (commands: Command[]) => {
   //fs.writeFileSync("commands.json", JSON.stringify({ commands: commands }));
-  fetch(DB_URL, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ commands: commands })
-  });
+  commands.forEach((command) =>
+    db
+      .collection("chat_commands")
+      .doc(command.command_word)
+      .set(command, { merge: true })
+  );
 };
 
 export const findCommand = (command_word: string, commands: Command[]) => {
@@ -60,18 +97,24 @@ export const newCommand = (
     usage_count: 0,
   };
 
+  db.collection("chat_commands")
+    .doc(new_command.command_word)
+    .set(new_command, { merge: true });
+
   return new_command;
 };
 
 //create new command with the new parameters
 //but use original commands added_by, added_timestamp and usage_count
 export const editCommand = (command: Command, user_parameters: string[]) => {
-  const edited_command = newCommand(
-    command.added_by,
-    user_parameters
-  );
+  const edited_command = newCommand(command.added_by, user_parameters);
   edited_command.added_timestamp = command.added_timestamp;
   edited_command.usage_count = command.usage_count;
+
+  db.collection("chat_commands")
+    .doc(edited_command.command_word)
+    .set(edited_command, { merge: true });
+
   return edited_command;
 };
 
