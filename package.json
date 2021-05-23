@@ -1,0 +1,22 @@
+{
+  "name": "matanbot",
+  "version": "1.0.0",
+  "description": "A chatbot that can respond to users on a Twitch chat stream, control Open Broadcaster Software (OBS) via websocket connection, and display chat on a browser, used as an overlay for OBS.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "(cd src/backend && npm run start) & (cd src/frontend && npm run start)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matanp/matanbot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matanp/matanbot/issues"
+  },
+  "homepage": "https://github.com/matanp/matanbot#readme"
+}
