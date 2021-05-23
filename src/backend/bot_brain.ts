@@ -99,7 +99,7 @@ function editCommand(user_parameters: string[]) {
 }
 
 // Called every time a message comes in
-const message_main = async (user_info : any, user_msg : string) => {
+export const message_main = async (user_info : any, user_msg : string) => {
     // Remove whitespace from chat message
     const user_text = user_msg.trim().toLowerCase();
 
@@ -156,5 +156,3 @@ const message_main = async (user_info : any, user_msg : string) => {
         }
     }
 };
-
-module.exports = { message_main: message_main };
