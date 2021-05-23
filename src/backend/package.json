@@ -1,8 +1,10 @@
 {
-  "name": "matanbot",
-  "version": "1.0.0",
-  "description": "Chat bot for matanjuggles social media.",
-  "main": "dist/twitch_main.js",
+    "name": "matanbot",
+    "version": "1.0.0",
+    "description": "Chat bot for matanjuggles social media.",
+    "main": "dist/twitch_main.js",
+    "author": "Matan Presberg",
+    "license": "MIT",
   "scripts": {
     "start": "tsc && node dist/twitch_main.js",
     "build": "babel --delete-dir-on-start --out-dir dist --copy-files --ignore \"**/__tests__/**,**/__mocks__/**\" --no-copy-ignored src",
@@ -10,14 +12,19 @@
     "build:dev": "tsc --watch --preserveWatchOutput",
     "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\""
   },
-  "author": "Matan Presberg",
-  "license": "MIT",
+
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "obs-websocket-js": "^4.0.2",
-    "tmi.js": "^1.7.5",
+    "passport": "^0.4.1",
+    "passport-oauth": "^1.0.0",
+    "passport-twitch": "^1.0.3",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.0"
+    "winston-daily-rotate-file": "^4.5.0",
+    "dotenv": "^8.2.0",
+    "firebase-admin": "^9.8.0",
+    "tmi.js": "^1.7.5"
   },
   "devDependencies": {
     "@types/node": "^15.0.2",

@@ -54,6 +54,7 @@ function repeatedMessageSay(message : any) {
  user_msg is the actual message
  from_self is a boolean of if the message is coming from this client
 */
+
 function onMessageHandler(target_channel : string, user_info : any, user_msg : string, from_self : boolean) {
     if (from_self) {
         return;

@@ -1,16 +1,15 @@
 "use strict";
 const obs = require("./obs_helper.js");
 const consts = require("./consts.js");
-const commands = require("./commands.js");
+import * as commands from "./commands.js";
 const { add } = require("winston");
 
 let matanbot_mention_count = 0;
 let mlk_quote_num = 0;
 
-const added_commands = commands.loadCommands();
+let added_commands : commands.Command[] = [];
 
-//every 5 minutes, save commands to persist usage counts
-setInterval(() => commands.saveCommands(added_commands), 5 * 60 * 1000);
+(async () => added_commands = await commands.loadCommands())();
 
 //logic for when matanbot is mentioned
 function respondToMatanbotMention(user_info : any) {
@@ -78,7 +77,6 @@ function addCommand(user_info : any, user_parameters: any) {
 
     const new_command = commands.newCommand(user_info["display-name"], user_parameters);
     added_commands.push(new_command);
-    commands.saveCommands(added_commands);
     return `Added !${new_command.command_word}`;
 }
 
@@ -96,7 +94,6 @@ function editCommand(user_parameters: string[]) {
 
     const edit_command = commands.editCommand(added_commands[edit_command_index], user_parameters);
     added_commands[edit_command_index] = edit_command;
-    commands.saveCommands(added_commands);
 
     return `Edited !${edit_command.command_word}`;
 }
@@ -150,7 +147,7 @@ const message_main = async (user_info : any, user_msg : string) => {
             if (user_parameters[0] === `count`) {
                 return `${user_command} has been used ${added_command.usage_count} times.`;
             } else if (user_parameters[0] === `age`) {
-                return `${user_command} was added on ${added_command.added_date} by ${added_command.added_by}.`;
+                return `${user_command} was added on ${added_command.added_timestamp} by ${added_command.added_by}.`;
             } else {
                 added_command.usage_count = added_command.usage_count + 1;
 
