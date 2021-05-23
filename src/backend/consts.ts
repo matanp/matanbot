@@ -24,7 +24,9 @@ export const background_images : any[] = [
     { obs_name: "invisible", command_name: "invisible" },
     { obs_name: "tornado", command_name: "fire" },
     { obs_name: "rainbow", command_name: "rainbow" },
-    { obs_name: "static", command_name: "static" }
+    { obs_name: "static", command_name: "static" },
+    { obs_name: "secret", command_name: "secret"},
+    { obs_name: "synth", command_name: "synth"}
 ];
 
 export const backgrounds_help_message: string = `Possible backgrounds are, pool, tile, earth, duck, universe, invisible, fire, rainbow, static. E.g. !background duck`;
