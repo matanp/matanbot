@@ -1,15 +1,17 @@
 "use strict";
 /* global process */
 require("dotenv").config();
-import fs from 'fs';
 
 //twitch client
 import twitch_client from 'tmi.js'
 
 //and we need the bot
-const bot = require("./bot_brain.js");
+import * as bot from "./bot_brain.js";
 
-const twitch_chat_websocket = require('./twitch_chat_ws');
+//databse functions 
+import * as firestore from './firestore';
+
+import * as twitch_chat_websocket from './twitch_chat_ws';
 
 const connectOBSWebsocket = require("./obs_helper").connect;
 const channelOut : string = process.env.CHANNEL || '';
@@ -28,8 +30,8 @@ const client : twitch_client.Client = new twitch_client.client(client_config);
 
 // Setup data for twitch message commands
 // message logic happens on twitch connection and on message
-const messages_json : string = String(fs.readFileSync("timers.json"));
-let repeated_messages_out = JSON.parse(messages_json);
+let repeated_messages_out: any = [];
+(async () => repeated_messages_out = await firestore.getChatTimers())();
 
 // Register event handlers (defined below)
 client.on("message", onMessageHandler);
@@ -54,7 +56,6 @@ function repeatedMessageSay(message : any) {
  user_msg is the actual message
  from_self is a boolean of if the message is coming from this client
 */
-
 function onMessageHandler(target_channel : string, user_info : any, user_msg : string, from_self : boolean) {
     if (from_self) {
         return;
@@ -65,7 +66,7 @@ function onMessageHandler(target_channel : string, user_info : any, user_msg : s
     twitch_chat_websocket.chat_client.send(`{"user": "${user_info.username}", "text": "${user_msg}"}`);
 
     //handle timer logic
-    for (let message of repeated_messages_out.timers) {
+    for (let message of repeated_messages_out) {
         message.countLines = message.countLines + 1;
         if (message.prioritizeLines) {
             repeatedMessageSay(message);
@@ -85,7 +86,7 @@ function onMessageHandler(target_channel : string, user_info : any, user_msg : s
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr : string, port: number) {
     console.log(`* Connected to ${addr}:${port}`);
-    for (let message of repeated_messages_out.timers) {
+    for (let message of repeated_messages_out) {
         message.countLines = 0;
         setInterval(() => {
             repeatedMessageSay(message);

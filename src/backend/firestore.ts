@@ -28,6 +28,7 @@ export const getCommands = async () => {
   return commands.docs.map((command_doc) => command_doc.data());
 };
 
+//send usage to usage_count field of command doc
 export const incrementCommandUsage = async (command_name: string) => {
     const doc_ref = db.collection('chat_commands').doc(command_name);
     await doc_ref.update({
@@ -35,6 +36,20 @@ export const incrementCommandUsage = async (command_name: string) => {
       });
 }
 
+//save command data, merge in case of editing command
 export const saveCommand = async (command: any) => {
     await db.collection('chat_commands').doc(command.command_word).set(command, {merge: true});
+}
+
+//load each doc from chat_timers collection, and return as array of timers
+export const getChatTimers = async () => {
+  const timers_ref = db.collection('chat_timers');
+  const timers = await timers_ref.get();
+  return timers.docs.map((timer_doc) => timer_doc.data());
+
+}
+
+//initial loading of timers to database, unused
+export const addChatTimer = async (timer: any) => {
+  await db.collection('chat_timers').doc(timer.name).set(timer);
 }

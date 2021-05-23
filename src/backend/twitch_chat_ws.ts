@@ -23,7 +23,6 @@ server.on("connection", function (socket: WebSocket) {
   });
 });
 
-let chat_client : any = new WebSocket(`ws://localhost:${port}`);
+export const chat_client : any = new WebSocket(`ws://localhost:${port}`);
 chat_client.on('message', (msg: string) => console.log(msg));
 
-module.exports = { chat_client: chat_client }
