@@ -1,18 +1,20 @@
 "use strict";
 /* global process */
 require("dotenv").config();
-const fs = require("fs");
 
 //twitch client
-const twitch_client = require("tmi.js");
+import twitch_client from 'tmi.js'
 
 //and we need the bot
-const bot = require("./bot_brain.js");
+import * as bot from "./bot_brain.js";
 
-const twitch_chat_websocket = require('./twitch_chat_ws');
+//databse functions 
+import * as firestore from './firestore';
+
+import * as twitch_chat_websocket from './twitch_chat_ws';
 
 const connectOBSWebsocket = require("./obs_helper").connect;
-const channelOut = process.env.CHANNEL;
+const channelOut : string = process.env.CHANNEL || '';
 
 // Define configuration options from env file
 const client_config = {
@@ -24,12 +26,12 @@ const client_config = {
 };
 
 // Create a Twitch client with options
-const client = new twitch_client.client(client_config);
+const client : twitch_client.Client = new twitch_client.client(client_config);
 
 // Setup data for twitch message commands
 // message logic happens on twitch connection and on message
-const messages_json = fs.readFileSync("timers.json");
-let repeated_messages_out = JSON.parse(messages_json);
+let repeated_messages_out: any = [];
+(async () => repeated_messages_out = await firestore.getChatTimers())();
 
 // Register event handlers (defined below)
 client.on("message", onMessageHandler);
@@ -40,7 +42,7 @@ client.connect();
 
 connectOBSWebsocket(); //connect to obs
 
-function repeatedMessageSay(message) {
+function repeatedMessageSay(message : any) {
     if (message.countLines >= message.minLines) {
         message.countLines = 0;
         client.say(channelOut, message.message);
@@ -54,7 +56,7 @@ function repeatedMessageSay(message) {
  user_msg is the actual message
  from_self is a boolean of if the message is coming from this client
 */
-function onMessageHandler(target_channel, msg_tags, user_msg, from_self) {
+function onMessageHandler(target_channel : string, msg_tags : any, user_msg : string, from_self : boolean) {
     if (from_self) {
         return;
     }
@@ -64,7 +66,7 @@ function onMessageHandler(target_channel, msg_tags, user_msg, from_self) {
     twitch_chat_websocket.chat_client.send(`{"user": "${msg_tags.username}", "text": "${user_msg}", "emotes": ${JSON.stringify(msg_tags.emotes)}}`);
 
     //handle timer logic
-    for (let message of repeated_messages_out.timers) {
+    for (let message of repeated_messages_out) {
         message.countLines = message.countLines + 1;
         if (message.prioritizeLines) {
             repeatedMessageSay(message);
@@ -74,17 +76,17 @@ function onMessageHandler(target_channel, msg_tags, user_msg, from_self) {
     //pass the message into the bot
     let response_promise = bot.message_main(msg_tags, user_msg);
     response_promise.then(
-        (result) => {
+        (result:string) => {
             if (result) client.say(channelOut, result);
         },
-        (error) => console.log(error)
+        (error: Error) => console.log(error)
     );
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler(addr, port) {
+function onConnectedHandler(addr : string, port: number) {
     console.log(`* Connected to ${addr}:${port}`);
-    for (let message of repeated_messages_out.timers) {
+    for (let message of repeated_messages_out) {
         message.countLines = 0;
         setInterval(() => {
             repeatedMessageSay(message);

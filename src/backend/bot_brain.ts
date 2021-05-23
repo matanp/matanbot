@@ -1,19 +1,18 @@
 "use strict";
 const obs = require("./obs_helper.js");
 const consts = require("./consts.js");
-const commands = require("./commands.js");
+import * as commands from "./commands.js";
 const { add } = require("winston");
 
 let matanbot_mention_count = 0;
 let mlk_quote_num = 0;
 
-const added_commands = commands.loadCommands();
+let added_commands : commands.Command[] = [];
 
-//every 5 minutes, save commands to persist usage counts
-setInterval(() => commands.saveCommands(added_commands), 5 * 60 * 1000);
+(async () => added_commands = await commands.loadCommands())();
 
 //logic for when matanbot is mentioned
-function respondToMatanbotMention(user_info) {
+function respondToMatanbotMention(user_info : any) {
     //random number 1 to 10
     const random_num = Math.floor(Math.random() * 10 + 1);
     let msg_out = "";
@@ -31,7 +30,7 @@ function respondToMatanbotMention(user_info) {
         msg_out = "hi " + user_info.username + "!";
     }
     if (matanbot_mention_count % 11 == 0) {
-        return `yall said my name ${count.toString()} times? wow!`;
+        return `yall said my name ${matanbot_mention_count.toString()} times? wow!`;
     } else {
         return msg_out;
     }
@@ -40,7 +39,7 @@ function respondToMatanbotMention(user_info) {
 //TODO: make not case sensitive
 //logic for !bg / !background command
 //if requested background exists, switch the background in OBS
-const changeGreenScreenBackground = async (image_request) => {
+const changeGreenScreenBackground = async (image_request : string) => {
     for (let image of consts.background_images) {
         if (image_request === image.command_name) {
             try {
@@ -67,7 +66,7 @@ function get_mlk_quote() {
 }
 
 //logic for mod !add / !addBackground command
-function addCommand(user_info, user_parameters) {
+function addCommand(user_info : any, user_parameters: any) {
     if (user_parameters.length < 2) {
         return `Mods can add a command with !add {command} {response} {+m for mod only}`;
     }
@@ -78,12 +77,11 @@ function addCommand(user_info, user_parameters) {
 
     const new_command = commands.newCommand(user_info["display-name"], user_parameters);
     added_commands.push(new_command);
-    commands.saveCommands(added_commands);
     return `Added !${new_command.command_word}`;
 }
 
 //logic for mod !edit / !editCommand command
-function editCommand(user_parameters) {
+function editCommand(user_parameters: string[]) {
     if (user_parameters.length < 2) {
         return `Mods can edit an existing command with !edit {command} {response} {+m for mod only}. Must add +m for command to stay mod only.`;
     }
@@ -91,18 +89,17 @@ function editCommand(user_parameters) {
     const edit_command_index = added_commands.indexOf(commands.findCommand(user_parameters[0], added_commands));
 
     if (edit_command_index === -1) {
-        return `!${command_word} is not an existing command.`;
+        return `!${user_parameters[0]} is not an existing command.`;
     }
 
     const edit_command = commands.editCommand(added_commands[edit_command_index], user_parameters);
     added_commands[edit_command_index] = edit_command;
-    commands.saveCommands(added_commands);
 
     return `Edited !${edit_command.command_word}`;
 }
 
 // Called every time a message comes in
-const message_main = async (user_info, user_msg) => {
+export const message_main = async (user_info : any, user_msg : string) => {
     // Remove whitespace from chat message
     const user_text = user_msg.trim().toLowerCase();
 
@@ -150,7 +147,7 @@ const message_main = async (user_info, user_msg) => {
             if (user_parameters[0] === `count`) {
                 return `${user_command} has been used ${added_command.usage_count} times.`;
             } else if (user_parameters[0] === `age`) {
-                return `${user_command} was added on ${added_command.added_date} by ${added_command.added_by}.`;
+                return `${user_command} was added on ${added_command.added_timestamp} by ${added_command.added_by}.`;
             } else {
                 added_command.usage_count = added_command.usage_count + 1;
 
@@ -159,5 +156,3 @@ const message_main = async (user_info, user_msg) => {
         }
     }
 };
-
-module.exports = { message_main: message_main };

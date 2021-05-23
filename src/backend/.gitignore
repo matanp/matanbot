@@ -1,7 +1,11 @@
+dist/
 log/
 node_modules/
 obs_objects_ref/
 twitch_chat_history/
+
 .env
 .eslintrc.json
 .vscode
+
+matanbot-bab21-firebase-adminsdk-bsty9-9195f4ab44.json
