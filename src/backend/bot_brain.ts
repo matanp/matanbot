@@ -11,9 +11,6 @@ let added_commands : commands.Command[] = [];
 
 (async () => added_commands = await commands.loadCommands())();
 
-//every 5 minutes, save commands to persist usage counts
-setInterval(() => commands.saveCommands(added_commands), 5 * 60 * 1000);
-
 //logic for when matanbot is mentioned
 function respondToMatanbotMention(user_info : any) {
     //random number 1 to 10
@@ -80,7 +77,6 @@ function addCommand(user_info : any, user_parameters: any) {
 
     const new_command = commands.newCommand(user_info["display-name"], user_parameters);
     added_commands.push(new_command);
-    commands.saveCommands(added_commands);
     return `Added !${new_command.command_word}`;
 }
 
@@ -98,7 +94,6 @@ function editCommand(user_parameters: string[]) {
 
     const edit_command = commands.editCommand(added_commands[edit_command_index], user_parameters);
     added_commands[edit_command_index] = edit_command;
-    commands.saveCommands(added_commands);
 
     return `Edited !${edit_command.command_word}`;
 }
@@ -143,8 +138,6 @@ const message_main = async (user_info : any, user_msg : string) => {
 
     //loop through commands
     for (let added_command of added_commands) {
-        console.log('here');
-        console.log(added_command);
         if (user_command === `!${added_command.command_word}`) {
             //user doesn't have privileges to call this command
             if(!mod_privileges && added_command.mod_only) {
