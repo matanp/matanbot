@@ -1,10 +1,10 @@
 {
-    "name": "matanbot",
-    "version": "1.0.0",
-    "description": "Chat bot for matanjuggles social media.",
-    "main": "dist/twitch_main.js",
-    "author": "Matan Presberg",
-    "license": "MIT",
+  "name": "matanbot",
+  "version": "1.0.0",
+  "description": "Chat bot for matanjuggles social media.",
+  "main": "dist/twitch_main.js",
+  "author": "Matan Presberg",
+  "license": "MIT",
   "scripts": {
     "start": "tsc && node dist/twitch_main.js",
     "build": "babel --delete-dir-on-start --out-dir dist --copy-files --ignore \"**/__tests__/**,**/__mocks__/**\" --no-copy-ignored src",
@@ -12,7 +12,6 @@
     "build:dev": "tsc --watch --preserveWatchOutput",
     "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\""
   },
-
   "dependencies": {
     "express": "^4.17.1",
     "express-session": "^1.17.1",
