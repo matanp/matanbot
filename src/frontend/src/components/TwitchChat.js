@@ -50,7 +50,7 @@ const TwitchChat = () => {
         //     },
         // ]);
         if(message.emotes) {
-            setEmotes([...emotes, ...Object.keys(message.emotes)]);
+            setEmotes((emotes) => [...emotes, ...Object.keys(message.emotes)]);
         }
 
     };
