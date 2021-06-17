@@ -52,18 +52,18 @@ function repeatedMessageSay(message : any) {
 /*
 // Called every time a message comes in
  target_channel is the twitch channel the message is coming from
- user_info is information about the user -- see example_context
+ msg_tags is extra metadata sent with the message, like username
  user_msg is the actual message
  from_self is a boolean of if the message is coming from this client
 */
-function onMessageHandler(target_channel : string, user_info : any, user_msg : string, from_self : boolean) {
+function onMessageHandler(target_channel : string, msg_tags : any, user_msg : string, from_self : boolean) {
     if (from_self) {
         return;
     }
-    console.log(user_msg);
+    console.log(msg_tags.emotes);
 
     //send message over websocket, frontend listening for messages
-    twitch_chat_websocket.chat_client.send(`{"user": "${user_info.username}", "text": "${user_msg}"}`);
+    twitch_chat_websocket.chat_client.send(`{"user": "${msg_tags.username}", "text": "${user_msg}", "emotes": ${JSON.stringify(msg_tags.emotes)}}`);
 
     //handle timer logic
     for (let message of repeated_messages_out) {
@@ -74,7 +74,7 @@ function onMessageHandler(target_channel : string, user_info : any, user_msg : s
     }
 
     //pass the message into the bot
-    let response_promise = bot.message_main(user_info, user_msg);
+    let response_promise = bot.message_main(msg_tags, user_msg);
     response_promise.then(
         (result:string) => {
             if (result) client.say(channelOut, result);

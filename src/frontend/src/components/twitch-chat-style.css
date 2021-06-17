@@ -13,3 +13,37 @@
     text-align: left!important;
     margin-bottom: 3px;
 }
+
+.emote {
+    position: absolute;
+    right: 0px;
+    animation : pulse 1s, fall 4s, disapear .3s 3.7s forwards;
+}
+
+@keyframes pulse {
+    from {
+        transform : scale(0);
+        opacity   : 0;
+    }
+    to {
+        transform : scale(1);
+        opacity   : 1;
+    }
+}
+
+@keyframes disapear {
+    from {
+        opacity: 1;
+    } to {
+        opacity: 0;
+    }
+}
+
+@keyframes fall {
+    from {
+        top: 0px;
+    }
+    to {
+        top: 480px;
+    }
+}
