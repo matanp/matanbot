@@ -13,7 +13,7 @@
     "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\""
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "obs-websocket-js": "^4.0.2",
     "passport": "^0.4.1",
